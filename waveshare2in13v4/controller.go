@@ -126,6 +126,34 @@ func updateDisplay(ctrl controller, mode PartialUpdate) {
 	ctrl.readBusy()
 }
 
+func configDisplayModeV4(ctrl controller, mode PartialUpdate) {
+	// Reset do display (importante para partial refresh)
+	ctrl.sendCommand(0x12) // SWRESET
+	ctrl.readBusy()
+
+	// Configuração comum
+	ctrl.sendCommand(0x01) // Driver output control
+	ctrl.sendData([]byte{0xF9, 0x00, 0x00})
+
+	ctrl.sendCommand(0x11) // Data entry mode
+	ctrl.sendData([]byte{0x03})
+
+	ctrl.sendCommand(0x3C) // Border waveform control
+	if mode == Partial {
+		ctrl.sendData([]byte{0x80})
+	} else {
+		ctrl.sendData([]byte{0x05})
+	}
+
+	ctrl.sendCommand(0x21) // Display update control
+	ctrl.sendData([]byte{0x00, 0x80})
+
+	ctrl.sendCommand(0x18) // Read built-in temperature sensor
+	ctrl.sendData([]byte{0x80})
+
+	ctrl.readBusy()
+}
+
 // new
 
 // turnOnDisplay turns on the display.

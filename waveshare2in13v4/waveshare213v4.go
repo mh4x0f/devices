@@ -202,10 +202,10 @@ func NewHat(p spi.Port, opts *Opts) (*Dev, error) {
 	return New(p, dc, cs, rst, busy, opts)
 }
 
-// func (d *Dev) configMode(ctrl controller) {
+func (d *Dev) configMode(ctrl controller) {
 
-// 	configDisplayMode(ctrl, d.mode)
-// }
+	configDisplayModeV4(ctrl, d.mode)
+}
 
 // Init configures the display for usage through the other functions.
 func (d *Dev) Init() error {
@@ -218,9 +218,9 @@ func (d *Dev) Init() error {
 
 	initDisplay(&eh, d.opts)
 
-	// if eh.err == nil {
-	// 	d.configMode(&eh)
-	// }
+	if eh.err == nil {
+		d.configMode(&eh)
+	}
 
 	return eh.err
 }
@@ -234,14 +234,14 @@ func (d *Dev) Init() error {
 // // The vendor datasheet recommends a full update at least once every 24 hours.
 // // When using partial updates the Clear function can be used for the purpose,
 // // followed by re-drawing.
-// func (d *Dev) SetUpdateMode(mode PartialUpdate) error {
-// 	d.mode = mode
+func (d *Dev) SetUpdateMode(mode PartialUpdate) error {
+	d.mode = mode
 
-// 	eh := errorHandler{d: *d}
-// 	d.configMode(&eh)
+	eh := errorHandler{d: *d}
+	d.configMode(&eh)
 
-// 	return eh.err
-// }
+	return eh.err
+}
 
 // Clear clears the display.
 func (d *Dev) Clear(color color.Color) error {
