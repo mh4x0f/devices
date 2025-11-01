@@ -243,7 +243,7 @@ func (d *Dev) SetUpdateMode(mode PartialUpdate) error {
 	return eh.err
 }
 
-func (d *Dev) displayPartial(img []byte) error {
+func (d *Dev) DisplayPartial(img []byte) error {
 	eh := errorHandler{d: *d}
 	eh.rstOut(gpio.Low)
 	time.Sleep(1 * time.Millisecond)
