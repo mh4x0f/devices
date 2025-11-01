@@ -243,6 +243,44 @@ func (d *Dev) SetUpdateMode(mode PartialUpdate) error {
 	return eh.err
 }
 
+func (d *Dev) displayPartial(img []byte) error {
+	eh := errorHandler{d: *d}
+	eh.rstOut(gpio.Low)
+	time.Sleep(1 * time.Millisecond)
+	eh.rstOut(gpio.High)
+
+	eh.sendCommand(0x3C)
+	eh.sendByte(0x80)
+
+	eh.sendCommand(0x01)
+	eh.sendByte(0xF9)
+	eh.sendByte(0x00)
+	eh.sendByte(0x00)
+
+	eh.sendCommand(0x11)
+	eh.sendByte(0x03)
+
+	eh.sendCommand(0x44)
+	eh.sendByte(0)
+	eh.sendByte(byte((d.opts.Width - 1) >> 3))
+
+	eh.sendCommand(0x45)
+	eh.sendByte(0)
+	eh.sendByte(0)
+	eh.sendByte(byte((d.opts.Height - 1) & 0xFF))
+	eh.sendByte(byte((d.opts.Height - 1) >> 8))
+
+	eh.sendCommand(0x24)
+	eh.sendData(img)
+
+	eh.sendCommand(0x22)
+	eh.sendByte(0xFF)
+	eh.sendCommand(0x20)
+	eh.readBusy()
+
+	return eh.err
+}
+
 // Clear clears the display.
 func (d *Dev) Clear(color color.Color) error {
 	return d.Draw(d.buffer.Bounds(), &image.Uniform{
